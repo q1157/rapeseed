@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1 style=" 
+        display:block;
+        text-align:center;"> 油菜生长情况比对模型 </h1>
+    <div style="
+    display:block;
+    text-align:center;
+    box-sizing: border-box;
+    background-color:#2112;
+    padding-top:130px ;
+    margin:100px;
+    border:10px;
+    width:500px;
+    height:auto;
+    margin:auto;
+
+    ">
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="imageInput" name="image" accept="image/*" required>
+        <button type="submit">上传图片</button>
+    </form>
+    
+    <div id="previewArea" style="margin-top:15px;">
+        <img id="previewImg" src="#" alt="图片预览" 
+        style="max-width: 80%;display:none;">
+   </div>
+   </div>
+   <div style="display: block;
+               text-align:center;
+               background-color: antiquewhite;
+               margin: auto;
+               margin-top:10px;
+               padding: 25px;
+               box-sizing: border-box;
+               height: 80px;
+               width: 500px;">
+        <a style="display: block;
+                  "
+        href="/report.html">查看报告</a>
+    </div>
+
+    <div id="result" style="margin:20px auto; text-align:center; 
+    background:#f0f0f0; padding:10px; width:500px;box-sizing:border-box;"></div>
+     <!--显示结果-->
+
+ <script> 
+ 
+ document.getElementById('imageInput').onchange=function(event){
+        const file=event.target.files[0];
+        if(file){
+            const reader=new FileReader();
+            reader.onload=function(e){
+                 const img =document.getElementById('previewImg');
+                 img.src=e.target.result;
+                 img.style.display='block';
+
+            };
+            reader.readAsDataURL(file);       
+        }
+
+        else{
+
+                const img = document.getElementById('previewImg');
+                img.style.display = 'none';
+            }
+
+        
+
+
+        }
+    document.getElementById('uploadForm').onsubmit=async(e)=>{
+        e.preventDefault();
+        const formData=new FormData(e.target);
+        const resultDiv=document.getElementById('result');
+        resultDiv.innerHTML='Lording...';
+    
+
+    try{
+
+        const response=await fetch('http://127.0.0.1:5000/predict',{
+            method:'POST',
+            body:formData
+        });
+        const text=await response.text();
+        resultDiv.innerHTML=`预测结果:<br><pre>${text}</pre>`;
+    } catch(err){
+        resultDiv.innerHTML=`连接失败:${err.message}<br>请确认后端已启动
+        （python）`;
+
+    };
+}
+    </script>
+</body>
+</html>
